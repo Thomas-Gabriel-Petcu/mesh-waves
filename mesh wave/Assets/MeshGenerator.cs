@@ -10,19 +10,28 @@ public class MeshGenerator : MonoBehaviour
     private MeshFilter _meshFilter;
     private Vector3[] _vertices;
     private int[] _trianglePoints;
+    public int quadxSize = 2;
+    public int quadzSize = 2;
+    public float vertexSpacing;
+    public int numberOfWaves;
 
-    public int xSize = 2;
-    public int zSize = 2;
-    public float waveFrequency;
-    public float waveSpeed;
-    public float waveAmplitude;
+    [Header("wave settings")]
+    public float amp = 1;
+    [Range(0.0001f, int.MaxValue)]
+    public float lmbd;
+
+    private float flowSpeed;
+    const float g = 9.28f;
+    private float k;
+    private float[] xOrigins;
+
     private void Awake()
     {
         _mesh = new Mesh();
         _meshFilter = GetComponent<MeshFilter>();
         _meshFilter.mesh = _mesh;
+        _mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
     }
-    // Start is called before the first frame update
     void Start()
     {
         GenerateShape();
@@ -30,43 +39,49 @@ public class MeshGenerator : MonoBehaviour
 
     private void Update()
     {
-        WaveMotion(Time.timeSinceLevelLoad);
+        if (lmbd < amp * 10)
+        {
+            lmbd = amp * 10;
+        }
+        Wave();
         UpdateShape();
 
     }
     private void GenerateShape()
     {
-        float rand;
-        _vertices = new Vector3[(xSize + 1) * (zSize + 1)];
-        for ( int z = 0, i = 0; z <= zSize; z++)
+        float l_currentX = 0, l_currentZ = 0;
+        _vertices = new Vector3[(quadxSize + 1) * (quadzSize + 1)];
+        xOrigins = new float[_vertices.Length];
+        for ( int z = 0, i = 0; z <= quadzSize; z++)
         {
-            for (int x = 0; x <= xSize; x++)
+            for (int x = 0; x <= quadxSize; x++)
             {
-                rand = Random.Range(0f, 1f);
-                _vertices[i] = new Vector3(x, rand, z);
+                _vertices[i] = new Vector3(l_currentX, 0, l_currentZ);
+                xOrigins[i] = l_currentX;
+                l_currentX += vertexSpacing;
                 i++;
             }
+            l_currentX = 0;
+            l_currentZ += vertexSpacing;
         }
-        _trianglePoints = new int[xSize * zSize * 6];
+        _trianglePoints = new int[(quadxSize+1) * (quadzSize+1) * 6];
         int l_Vertex = 0;
         int l_triPointPosition = 0;
-        for (int j = 0; j < zSize; j++)
+        for (int j = 0; j < quadzSize; j++)
         {
-            for (int i = 0; i < xSize; i++)
+            for (int i = 0; i < quadxSize; i++)
             {
                 _trianglePoints[l_triPointPosition] = l_Vertex;
-                _trianglePoints[l_triPointPosition + 1] = l_Vertex + xSize + 1;
+                _trianglePoints[l_triPointPosition + 1] = l_Vertex + quadxSize + 1;
                 _trianglePoints[l_triPointPosition + 2] = l_Vertex + 1;
                 _trianglePoints[l_triPointPosition + 3] = l_Vertex + 1;
-                _trianglePoints[l_triPointPosition + 4] = l_Vertex + xSize + 1;
-                _trianglePoints[l_triPointPosition + 5] = l_Vertex + xSize + 2;
+                _trianglePoints[l_triPointPosition + 4] = l_Vertex + quadxSize + 1;
+                _trianglePoints[l_triPointPosition + 5] = l_Vertex + quadxSize + 2;
                 l_Vertex++;
                 l_triPointPosition += 6;
             }
             l_Vertex++;
         }
-        
-
     }
     private void UpdateShape()
     {
@@ -75,11 +90,19 @@ public class MeshGenerator : MonoBehaviour
         _mesh.triangles = _trianglePoints;
         _mesh.RecalculateNormals();
     }
-    private void WaveMotion(float time)
+    private void Wave()
     {
+        k = (2 * Mathf.PI) / lmbd;
         for (int i = 0; i < _vertices.Length; i++)
         {
-            _vertices[i].y = Mathf.Sin(time + _vertices[i].x * waveSpeed) * waveAmplitude;
+            _vertices[i].x = xOrigins[i] + amp * 1 - Mathf.Cos(G(_vertices[i].x));
+            _vertices[i].y = 1 - Mathf.Abs(amp * Mathf.Sin(G(_vertices[i].x)));
         }
+    }
+
+    private float G(float x)
+    {
+        flowSpeed = Mathf.Sqrt(g/k);
+        return k *(x - flowSpeed * Time.time);
     }
 }

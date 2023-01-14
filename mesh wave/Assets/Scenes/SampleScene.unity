@@ -387,11 +387,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c97163892bcb0d428d85da5a783df97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSize: 50
-  zSize: 50
-  waveFrequency: 0
-  waveSpeed: 0.1
-  waveAmplitude: 1
+  quadxSize: 100
+  quadzSize: 100
+  vertexSpacing: 0.5
+  numberOfWaves: 2
+  amp: 1
+  lmbd: 10
 --- !u!23 &553480514
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -505,4 +506,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1318003345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1318003347}
+  - component: {fileID: 1318003346}
+  m_Layer: 0
+  m_Name: PointGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1318003346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318003345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f011b20bea926df43bab5a64d45c1e52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  point: {fileID: 8965678775496959985, guid: 972593691b355264797ec8a45da9aee3, type: 3}
+  numberOfPoints: 1000
+  xSpacing: 2
+  amplitude: 2
+  speed: 1
+  waveLength: 10
+--- !u!4 &1318003347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318003345}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
