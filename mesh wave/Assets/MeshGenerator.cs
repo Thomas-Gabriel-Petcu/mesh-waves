@@ -16,13 +16,7 @@ public class MeshGenerator : MonoBehaviour
     public int numberOfWaves;
 
     [Header("wave settings")]
-    public float amp = 1;
-    [Range(0.0001f, int.MaxValue)]
-    public float lmbd;
-
-    private float flowSpeed;
-    const float g = 9.28f;
-    private float k;
+    public Wave[] waves;
     private float[] xOrigins;
 
     private void Awake()
@@ -39,13 +33,8 @@ public class MeshGenerator : MonoBehaviour
 
     private void Update()
     {
-        if (lmbd < amp * 10)
-        {
-            lmbd = amp * 10;
-        }
         Wave();
         UpdateShape();
-
     }
     private void GenerateShape()
     {
@@ -92,17 +81,27 @@ public class MeshGenerator : MonoBehaviour
     }
     private void Wave()
     {
-        k = (2 * Mathf.PI) / lmbd;
+        Vector3 store = new Vector3();
         for (int i = 0; i < _vertices.Length; i++)
         {
-            _vertices[i].x = xOrigins[i] + amp * 1 - Mathf.Cos(G(_vertices[i].x));
-            _vertices[i].y = 1 - Mathf.Abs(amp * Mathf.Sin(G(_vertices[i].x)));
+            //k = (2 * Mathf.PI) / lmbd;
+            //amp = s / k;
+            foreach (Wave wave in waves)
+            {
+                store.x += xOrigins[i] + wave.amp * Mathf.Cos(G(xOrigins[i], wave.lmbd, wave.flowSpeed, wave.offset));
+                store.y += wave.amp * Mathf.Sin(G(xOrigins[i], wave.lmbd, wave.flowSpeed, wave.offset));
+            }
+            store.z = _vertices[i].z;
+            _vertices[i] = store;
+            store = Vector3.zero;
+            //_vertices[i].x = xOrigins[i] + amp * Mathf.Cos(G(xOrigins[i]));
+            //_vertices[i].y = amp * Mathf.Sin(G(xOrigins[i]));
         }
     }
-
-    private float G(float x)
+    private float G(float x,float lmbd, float flowSpeed, float offset)
     {
-        flowSpeed = Mathf.Sqrt(g/k);
-        return k *(x - flowSpeed * Time.time);
+        float k;
+        k = (2 * Mathf.PI) / lmbd;
+        return k *(x - offset - flowSpeed * Time.time);
     }
 }
