@@ -387,26 +387,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c97163892bcb0d428d85da5a783df97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quadxSize: 400
+  quadxSize: 200
   quadzSize: 200
   vertexSpacing: 1
   numberOfWaves: 1
   waves:
-  - amp: 3
+  - s: 0.24
     lmbd: 30
     flowSpeed: 1
     weight: 1
     offset: 0
-  - amp: 2
+    direction: {x: 1, y: 0, z: 1}
+  - s: 1
     lmbd: 20
     flowSpeed: 4
     weight: 1
     offset: 20
-  - amp: 1
+    direction: {x: 0.5, y: 0, z: 1}
+  - s: 0.47
     lmbd: 10
     flowSpeed: 8
     weight: 1
     offset: 30.6
+    direction: {x: 1, y: 0, z: 1}
 --- !u!23 &553480514
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -14,10 +14,12 @@ public class MeshGenerator : MonoBehaviour
     public int quadzSize = 2;
     public float vertexSpacing;
     public int numberOfWaves;
+    //public Vector3 direction;
 
     [Header("wave settings")]
     public Wave[] waves;
-    private float[] xOrigins;
+    private Vector3[] originalPos;
+
 
     private void Awake()
     {
@@ -40,13 +42,13 @@ public class MeshGenerator : MonoBehaviour
     {
         float l_currentX = 0, l_currentZ = 0;
         _vertices = new Vector3[(quadxSize + 1) * (quadzSize + 1)];
-        xOrigins = new float[_vertices.Length];
+        originalPos = new Vector3[_vertices.Length];
         for ( int z = 0, i = 0; z <= quadzSize; z++)
         {
             for (int x = 0; x <= quadxSize; x++)
             {
                 _vertices[i] = new Vector3(l_currentX, 0, l_currentZ);
-                xOrigins[i] = l_currentX;
+                originalPos[i] = _vertices[i];
                 l_currentX += vertexSpacing;
                 i++;
             }
@@ -88,20 +90,23 @@ public class MeshGenerator : MonoBehaviour
             //amp = s / k;
             foreach (Wave wave in waves)
             {
-                store.x += xOrigins[i] + wave.amp * Mathf.Cos(G(xOrigins[i], wave.lmbd, wave.flowSpeed, wave.offset));
-                store.y += wave.amp * Mathf.Sin(G(xOrigins[i], wave.lmbd, wave.flowSpeed, wave.offset));
+                store.x += originalPos[i].x + wave.direction.x * wave.GetAmp() * Mathf.Cos(G(originalPos[i], wave));
+                store.y += wave.GetAmp() * Mathf.Sin(G(originalPos[i], wave));
+                store.z += originalPos[i].z + wave.direction.z * wave.GetAmp() * Mathf.Cos(G(originalPos[i], wave));
             }
-            store.z = _vertices[i].z;
+            //store.z = _vertices[i].z;
             _vertices[i] = store;
             store = Vector3.zero;
             //_vertices[i].x = xOrigins[i] + amp * Mathf.Cos(G(xOrigins[i]));
             //_vertices[i].y = amp * Mathf.Sin(G(xOrigins[i]));
+            Color color = new Color();
+            color = Color.Lerp();
         }
     }
-    private float G(float x,float lmbd, float flowSpeed, float offset)
+    private float G(Vector3 pos, Wave wave)
     {
         float k;
-        k = (2 * Mathf.PI) / lmbd;
-        return k *(x - offset - flowSpeed * Time.time);
+        k = (2 * Mathf.PI) / wave.lmbd;
+        return k * (wave.direction.x * pos.x + wave.direction.z * pos.z - wave.offset - wave.flowSpeed * Time.time);
     }
 }
